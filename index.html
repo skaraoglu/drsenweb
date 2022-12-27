@@ -59,7 +59,7 @@
                 <div id="sepbg" style="background-color: transparent;height: 5; width: 100%;"><img src="img/sep5.png" style="width: 100%;"></div>
             </div>
             <div id="content" style=" background-color: transparent; z-index: 998; width: 1120; max-width: 1120; top:0; height: 100%;">
-                <div id="profileimg" style="width: 420; float: left; height: 490;"><img src="img/profile.png"></div>
+                <div id="profileimg" style="width: 420; float: left; height: 490;"><img onclick = "getFlikrUrlInfo()" style="width: 420; height: 490;" id="profim" src="img/profile.png"></div>
                 <div id="info" style="width: 700; float: right; text-align: left;">
                     <p style="font-family: 'Playfair Display'; font-size: 72px; margin-top: 120; margin-left: 50;">Sandip SEN</p>
                     <p style="color: #004b8e; font-size: 30; margin-left: 50; margin-top: -60;">Professor</p>
@@ -68,13 +68,19 @@
                 </div>
                 <div id="content-main" style="width: 100%; float:inline-end; text-align: left; position: relative;">
                     <div id="personallinks" style="width: 100%; padding-left: 10;">
-                        Older photographs from <a href=# style="font-size: 20;">1996</a> & <a href=# style="font-size: 20;">2006</a><br>
-                        A <a href=# style="font-size: 20;">sketch</a> from my student<br>
+                        Older photographs from <a href=# onclick="changeProf('Sen96.jpg')" style="font-size: 20; ">1996</a> & <a href=# onclick="changeProf('Sen06.jpg')" style="font-size: 20; ">2006</a><br>
+                        A <a href=# onclick="changeProf('DrawnProfile.jpg')" style="font-size: 20;">sketch</a> from my student<br>
                         My <a href=# style="font-size: 20;">writings</a> (including Bengali poetry)<br>
                     </div>
                     <img src="img/sep2.png" style="padding-top: 10; padding-bottom: 10;">
-                    <div id="carousel" style="width: 100%; height: 230; background-color: #fff;">
-                        <img src="img/crsl.png">
+                    <div id="carousel" style="width: 100%; height: 230; background-color: #f1f1e6;">
+                        <img src="img/leftArrow.png" onclick = "changePos(-1)" style="width: 4%; height: 230; background-color: #f1f1e6; border: none;"/>
+                        <img id="card0" src="https://live.staticflickr.com/8015/7213465132_5580d3f92a_w.jpg" style="width: 18%; height: 230; background-color: #fff;">
+                        <img id="card1" src="https://live.staticflickr.com/8015/7213465132_5580d3f92a_w.jpg" style="width: 18%; height: 230; background-color: #fff;">
+                        <img id="card2" src="https://live.staticflickr.com/8015/7213465132_5580d3f92a_w.jpg" style="width: 18%; height: 230; background-color: #fff;">
+                        <img id="card3" src="https://live.staticflickr.com/8015/7213465132_5580d3f92a_w.jpg" style="width: 18%; height: 230; background-color: #fff;">
+                        <img id="card4" src="https://live.staticflickr.com/8015/7213465132_5580d3f92a_w.jpg" style="width: 18%; height: 230; background-color: #f1f1e6;">
+                        <img src="img/rightArrow.png" onclick = "changePos(1)" style="width: 4%; height: 230; background-color: #f1f1e6; border: none;"/>
                     </div>
                     <img src="img/sep2.png" style="padding-top: 10;">
                     <!-- The indentation has to be like this for pre-warp to work -->
@@ -121,4 +127,54 @@ Tulsa.
             </div>
         </div>
     </div>
+    
 </body>
+
+<script>
+
+function changeProf(prof){
+    console.log("Clicled")
+    console.log("img/Profiles/"+prof)
+    let profile = document.getElementById("profim")
+    profile.src="img/Profiles/"+prof
+}
+
+function getFlikrUrlInfo(){
+    var apiurl,myresult,apiurl_size,selected_size;
+    apiurl = "https://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos&api_key=ed0d2f473c57ca8d14c185928a3075fc&user_id=55117507@N00&per_page=100&format=json&nojsoncallback=1";
+    
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", apiurl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    data = JSON.parse(xmlHttp.response)
+    //console.log(xmlHttp.responseType)
+    //console.log(xmlHttp.responseText)
+    //console.log(data.photos.photo)
+    //console.log()
+    urls = []
+    for(let i=0; i<data.photos.photo.length; i++){
+        p = data.photos.photo[i]
+        urls.push(`https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_w.jpg`)
+    }
+    //console.log(urls)
+    return urls
+}
+
+urls = getFlikrUrlInfo()
+currentPos = 0
+
+
+function changePos(dir){
+    if(currentPos + dir < 0 || currentPos + dir > urls.length-5) return
+
+    currentPos += dir
+    for(let i=4; i>=0; i--){
+        let pic = document.getElementById(`card${i}`)
+        pic.src = urls[currentPos+i]
+    }
+}
+
+changePos(1)
+//<a class="overlay no-outline" href="/photos/sandip-sen/7213465132/" tabindex="0" role="heading" aria-level="3" aria-label="Warsaw, Poland by Sandip Sen" id="yui_3_16_0_1_1672170385514_16348">HiTher</a>
+
+</script>
